@@ -11,25 +11,6 @@ let currentTab;
 let dataSource;
 let routeId;
 
-function updateIcon() {
-  browser.browserAction.setIcon({
-    path: (routeId && dataSource) ? {
-      32: "icons/hb2-plus-32.png",
-      48: "icons/hb2-plus-48.png",
-      96: "icons/hb2-plus-96.png"
-    } : {
-      32: "icons/hb2-32.png",
-      48: "icons/hb2-48.png",
-      96: "icons/hb2-96.png"
-    },
-    tabId: currentTab.id
-  });
-  browser.browserAction.setTitle({
-    title: (routeId && dataSource) ? `Import this route to Homebytwo!` : 'Go to Strava or Switzerland Mobility to import a route!',
-    tabId: currentTab.id
-  });
-}
-
 function updateActiveTab() {
 
   function routeCanBeImported(urlString) {
@@ -70,12 +51,11 @@ function updateActiveTab() {
     if (tabs[0]) {
       currentTab = tabs[0];
       if (routeCanBeImported(currentTab.url)) {
-        browser.browserAction.enable();
+        browser.pageAction.show(currentTab.id);
       } else {
-        browser.browserAction.disable();
+        browser.pageAction.hide(currentTab.id);
         clearRouteVariable();
       }
-      updateIcon();
     }
   }
   let gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
@@ -98,6 +78,6 @@ updateActiveTab();
 function openRouteImportTab(dataSource, routeId){
   browser.tabs.create({url: `https://www.homebytwo.ch/import/${dataSource}/${routeId}`});
 }
-browser.browserAction.onClicked.addListener((tab) => {
+browser.pageAction.onClicked.addListener((tab) => {
   openRouteImportTab(dataSource, routeId);
 });
