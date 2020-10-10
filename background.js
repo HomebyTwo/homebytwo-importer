@@ -51,33 +51,32 @@ function updateActiveTab() {
     if (tabs[0]) {
       currentTab = tabs[0];
       if (routeCanBeImported(currentTab.url)) {
-        browser.pageAction.show(currentTab.id);
+        chrome.pageAction.show(currentTab.id);
       } else {
-        browser.pageAction.hide(currentTab.id);
+        chrome.pageAction.hide(currentTab.id);
         clearRouteVariable();
       }
     }
   }
-  let gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
-  gettingActiveTab.then(updateTab);
+  chrome.tabs.query({active: true, currentWindow: true}, updateTab);
 }
 
 // listen to tab URL changes
-browser.tabs.onUpdated.addListener(updateActiveTab);
+chrome.tabs.onUpdated.addListener(updateActiveTab);
 
 // listen to tab switching
-browser.tabs.onActivated.addListener(updateActiveTab);
+chrome.tabs.onActivated.addListener(updateActiveTab);
 
 // listen for window switching
-browser.windows.onFocusChanged.addListener(updateActiveTab);
+chrome.windows.onFocusChanged.addListener(updateActiveTab);
 
 // update when the extension loads initially
 updateActiveTab();
 
 // open route import page at homebytwo.ch
 function openRouteImportTab(dataSource, routeId){
-  browser.tabs.create({url: `https://www.homebytwo.ch/import/${dataSource}/${routeId}`});
+  chrome.tabs.create({url: `https://www.homebytwo.ch/import/${dataSource}/${routeId}`});
 }
-browser.pageAction.onClicked.addListener((tab) => {
+chrome.pageAction.onClicked.addListener((tab) => {
   openRouteImportTab(dataSource, routeId);
 });
